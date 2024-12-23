@@ -48,6 +48,12 @@ class Product
         return $this;
     }
 
+    public function setPrice(int $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -61,5 +67,10 @@ class Product
     public function getActive(): bool
     {
         return $this->active;
+    }
+
+    public function getPrice(): int
+    {
+        return $this->price;
     }
 }
