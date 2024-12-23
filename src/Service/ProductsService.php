@@ -2,9 +2,11 @@
 
 namespace App\Service;
 
-use App\DTO\ProductDTO;
+use App\DTO\Product\ProductDTO;
+use App\DTO\Product\UpdateProductDTO;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ProductsService
 {
@@ -25,6 +27,30 @@ class ProductsService
         ]);
 
         return $product ? (new ProductDTO($product))->toArray() : [];
+    }
+
+    public function updateProduct(UpdateProductDTO $dto, EntityManagerInterface $manager): bool|array
+    {
+        $product = $this->repository->findOneBy([
+            'id' => $dto->getId(),
+            'active' => true
+        ]);
+
+        if (!$product) {
+            return false;
+        }
+
+        $product->setName($dto->getName())
+            ->setDescription($dto->getDescription())
+            ->setPrice($dto->getPrice())
+            ->setActive($dto->getActive());
+
+        return false;
+
+        /*
+         * TODO доделать обноление
+         */
+
     }
 
 }

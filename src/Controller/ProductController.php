@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DTO\Product\UpdateProductDTO;
 use App\Service\ProductsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,17 +15,23 @@ class ProductController extends AbstractController
     {
     }
 
-    #[Route('/products', name: 'products')]
+    #[Route('/products', name: 'product.all', methods: 'GET')]
     public function getAll(): JsonResponse
     {
         return new JsonResponse($this->productsService->getAllProducts());
     }
 
-    #[Route('/products/{id}', name: 'product')]
+    #[Route('/products/{id}', name: 'product.one', methods: 'GET')]
     public function getOne(int $id): JsonResponse
     {
         $product = $this->productsService->getOne($id);
         return new JsonResponse($product);
+    }
+
+    #[Route('/products/{id}/update', name: 'product.update', methods: 'PUT')]
+    public function update(int $id): JsonResponse
+    {
+        return new JsonResponse($this->productsService->updateProduct(new UpdateProductDTO()));
     }
 
 }
