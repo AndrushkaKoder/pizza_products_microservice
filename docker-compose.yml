@@ -1,0 +1,43 @@
+services:
+
+  #server
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./_docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./:/var/www/html
+
+    #php
+  php:
+    build:
+      context: _docker/dockerfiles
+      dockerfile: php.Dockerfile
+    volumes:
+      - ./:/var/www/html
+
+  #composer
+  composer:
+    build:
+      context: _docker/dockerfiles
+      dockerfile: composer.Dockerfile
+    volumes:
+      - ./src:/var/www/html
+
+  #mysql
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: products
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+
+volumes:
+  mysql_data:
