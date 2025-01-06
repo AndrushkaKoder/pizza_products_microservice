@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\DTO\Product\CreateProductDTO;
 use App\DTO\Product\OneProductDTO;
 use App\DTO\Product\UpdateProductDTO;
+use App\Entity\Category;
+use App\Entity\Product;
 use App\Service\ProductsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -95,6 +97,13 @@ class ProductController extends AbstractController
             'success' => $deleted,
             'message' => $deleted ? 'Product was deleted' : 'Product not found'
         ], $deleted ? 200 : 400);
+    }
+
+
+    #[Route('/products/{id}/attach/{category}', methods: 'POST')]
+    public function attachCategory(Product $product, Category $category): JsonResponse
+    {
+        return new JsonResponse($this->productsService->attachCategory($product, $category));
     }
 
 }

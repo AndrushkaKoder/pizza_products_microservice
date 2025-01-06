@@ -8,6 +8,7 @@ use App\DTO\Product\CreateProductDTO;
 use App\DTO\Product\OneProductDTO;
 use App\DTO\Product\ProductDTO;
 use App\DTO\Product\UpdateProductDTO;
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Exception\NotFoundException;
 use App\Repository\ProductRepository;
@@ -114,6 +115,19 @@ readonly class ProductsService
         }
 
         return $skippedFields;
+    }
+
+    public function attachCategory(Product $product, Category $category): bool
+    {
+        $product->addCategory($category);
+        $category->addProduct($product);
+
+        $this->manager->persist($product);
+        $this->manager->persist($category);
+
+        $this->manager->flush();
+
+        return true;
     }
 
 }
