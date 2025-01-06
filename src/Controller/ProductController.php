@@ -89,8 +89,7 @@ class ProductController extends AbstractController
     #[Route('/products/{id}', name: 'products.delete', methods: 'DELETE')]
     public function delete(int $id): JsonResponse
     {
-        $productDTO = new OneProductDTO($id);
-        $deleted = $this->productsService->deleteProduct($productDTO);
+        $deleted = $this->productsService->deleteProduct(new OneProductDTO($id));
 
         return new JsonResponse([
             'success' => $deleted,
