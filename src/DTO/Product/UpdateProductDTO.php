@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO\Product;
 
-class UpdateProductDTO
+readonly class UpdateProductDTO
 {
     public function __construct(
-        private readonly int    $id,
-        private readonly string $name,
-        private readonly string $description,
-        private readonly int    $price,
-        private readonly bool   $active = true
+        private int    $id,
+        private string $name,
+        private string $description,
+        private int    $price,
+        private bool   $active = true
     )
     {
 
