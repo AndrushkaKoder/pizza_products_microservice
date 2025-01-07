@@ -100,7 +100,7 @@ class ProductController extends AbstractController
     }
 
 
-    #[Route('/products/{id}/attach/{category}', methods: 'POST')]
+    #[Route('/products/{product}/attach/{category}', methods: 'POST')]
     public function attachCategory(Product $product, Category $category): JsonResponse
     {
         return new JsonResponse($this->productsService->attachCategory($product, $category));

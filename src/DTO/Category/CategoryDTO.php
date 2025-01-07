@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO\Category;
 
 use App\Entity\Category;
 
-class CategoryDTO
+readonly class CategoryDTO
 {
-    public function __construct(private readonly Category $category)
+    public function __construct(private Category $category)
     {
     }
 
@@ -14,8 +16,7 @@ class CategoryDTO
     {
         return [
             'id' => $this->category->getId(),
-            'title' => $this->category->getTitle(),
-            'active' => $this->category->getActive()
+            'title' => $this->category->getTitle()
         ];
     }
 

@@ -117,8 +117,15 @@ readonly class ProductsService
         return $skippedFields;
     }
 
-    public function attachCategory(Product $product, Category $category): bool
+    public function attachCategory(Product $product, Category $category): array
     {
+        if ($product->getCategories()->contains($category)) {
+            return [
+                'success' => false,
+                'message' => "Error attach: {$product->getName()} has category: {$category->getTitle()}"
+            ];
+        }
+
         $product->addCategory($category);
         $category->addProduct($product);
 
@@ -127,7 +134,10 @@ readonly class ProductsService
 
         $this->manager->flush();
 
-        return true;
+        return [
+            'success' => true,
+            'message' => "Success attach {$product->getName()} to {$category->getTitle()}"
+        ];
     }
 
 }
