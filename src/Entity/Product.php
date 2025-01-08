@@ -15,26 +15,43 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(
+        length: 255,
+        nullable: false
+    )]
     private string $name;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(
+        length: 255,
+        nullable: true
+    )]
     private string $description;
 
     #[ORM\Column(nullable: false)]
     private int $price;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: false)]
     private bool $active = true;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: "products")]
+    #[ORM\ManyToMany(
+        targetEntity: Category::class,
+        inversedBy: "products"
+    )]
     #[ORM\JoinTable(name: "category_product")]
     private Collection $categories;
+
+    #[ORM\OneToMany(
+        targetEntity: Image::class,
+        mappedBy: 'product',
+        cascade: ['persist', 'remove']
+    )]
+    private Collection $images;
 
 
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getCategories(): Collection
@@ -59,6 +76,32 @@ class Product
         }
 
         return $this;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            if ($image->getProduct() === $this) {
+                $image->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getImages(): Collection
+    {
+        return $this->images;
     }
 
     public function getId(): ?int
