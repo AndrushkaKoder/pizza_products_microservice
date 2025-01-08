@@ -33,6 +33,12 @@ class Product
     #[ORM\Column(nullable: false)]
     private bool $active = true;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_at = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updated_at = null;
+
     #[ORM\ManyToMany(
         targetEntity: Category::class,
         inversedBy: "products"
