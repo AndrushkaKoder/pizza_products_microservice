@@ -8,7 +8,6 @@ use App\DTO\Product\CreateProductDTO;
 use App\DTO\Product\OneProductDTO;
 use App\DTO\Product\ProductDTO;
 use App\DTO\Product\UpdateProductDTO;
-use App\Entity\Category;
 use App\Entity\Product;
 use App\Exception\NotFoundException;
 use App\Repository\ProductRepository;
@@ -115,29 +114,6 @@ readonly class ProductsService
         }
 
         return $skippedFields;
-    }
-
-    public function attachCategory(Product $product, Category $category): array
-    {
-        if ($product->getCategories()->contains($category)) {
-            return [
-                'success' => false,
-                'message' => "Error attach: {$product->getName()} has category: {$category->getTitle()}"
-            ];
-        }
-
-        $product->addCategory($category);
-        $category->addProduct($product);
-
-        $this->manager->persist($product);
-        $this->manager->persist($category);
-
-        $this->manager->flush();
-
-        return [
-            'success' => true,
-            'message' => "Success attach {$product->getName()} to {$category->getTitle()}"
-        ];
     }
 
 }

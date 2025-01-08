@@ -17,7 +17,7 @@ final class Version20250108172632 extends AbstractMigration
     {
        $this->addSql('ALTER TABLE product ADD created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
        $this->addSql('ALTER TABLE product ADD updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
-       $this->addSql('ALTER TABLE category ADD updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
+       $this->addSql('ALTER TABLE category ADD created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
        $this->addSql('ALTER TABLE category ADD updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP');
        $this->addSql('ALTER TABLE category RENAME COLUMN title TO name');
     }

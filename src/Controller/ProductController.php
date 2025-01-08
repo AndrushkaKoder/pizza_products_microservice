@@ -9,6 +9,8 @@ use App\DTO\Product\OneProductDTO;
 use App\DTO\Product\UpdateProductDTO;
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Service\Binder\ProductCategoryBinder;
+use App\Service\File\FileSaver;
 use App\Service\ProductsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +20,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api')]
 class ProductController extends AbstractController
 {
-    public function __construct(private readonly ProductsService $productsService)
+    public function __construct(
+        private readonly ProductsService $productsService,
+        private readonly ProductCategoryBinder $productCategoryBinder
+    )
     {
     }
 
@@ -100,10 +105,47 @@ class ProductController extends AbstractController
     }
 
 
-    #[Route('/products/{product}/attach/{category}', methods: 'POST')]
+    #[Route('/products/{product}/attach/{category}', name: 'products.category.attach', methods: 'GET')]
     public function attachCategory(Product $product, Category $category): JsonResponse
     {
-        return new JsonResponse($this->productsService->attachCategory($product, $category));
+        $attach = $this->productCategoryBinder
+            ->setProduct($product)
+            ->setCategory($category)
+            ->attach();
+
+        return new JsonResponse($attach);
+    }
+
+
+    #[Route('/products/{product}/detach/{category}', name: 'products.category.detach', methods: 'GET')]
+    public function detachCategory(Product $product, Category $category): JsonResponse
+    {
+        $detach = $this->productCategoryBinder
+            ->setProduct($product)
+            ->setCategory($category)
+            ->detach();
+
+        return new JsonResponse($detach);
+    }
+
+
+    #[Route('/products/{id}/upload', name: 'products.add_image', methods: 'POST')]
+    public function uploadImage(Product $product, Request $request): JsonResponse
+    {
+        $file = $request->files->get('image');
+
+        if (!$file) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No image'
+            ], 400);
+        }
+
+        $fileSaver = new FileSaver($file);
+
+        return new JsonResponse([
+            'success' => $fileSaver->save()
+        ]);
     }
 
 }

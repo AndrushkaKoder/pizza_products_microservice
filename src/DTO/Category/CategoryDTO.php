@@ -16,7 +16,7 @@ readonly class CategoryDTO
     {
         return [
             'id' => $this->category->getId(),
-            'title' => $this->category->getTitle()
+            'title' => $this->category->getName()
         ];
     }
 

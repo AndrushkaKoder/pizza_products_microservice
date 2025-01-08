@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO\Category;
 
-class UpdateCategoryDTO
+readonly class UpdateCategoryDTO
 {
     public function __construct(
-        private readonly int $id,
-        private readonly string $title,
-        private readonly bool $active = true
+        private int $id,
+        private string $title,
+        private bool $active = true
     )
     {
     }
