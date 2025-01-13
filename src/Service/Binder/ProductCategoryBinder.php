@@ -8,7 +8,7 @@ use App\Entity\Category;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 
-readonly class ProductCategoryBinder
+class ProductCategoryBinder
 {
     private Product $product;
 

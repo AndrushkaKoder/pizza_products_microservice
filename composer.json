@@ -12,9 +12,13 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.3",
         "symfony/console": "7.2.*",
+        "symfony/css-selector": "7.2.*",
+        "symfony/dom-crawler": "7.2.*",
         "symfony/dotenv": "7.2.*",
+        "symfony/filesystem": "7.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.2.*",
+        "symfony/http-client": "7.2.*",
         "symfony/mime": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/yaml": "7.2.*"

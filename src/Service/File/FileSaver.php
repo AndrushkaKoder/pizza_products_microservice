@@ -4,37 +4,66 @@ declare(strict_types=1);
 
 namespace App\Service\File;
 
-use App\Entity\Image;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FileSaver
 {
     public function __construct(
-        private readonly UploadedFile $file
+        private string|UploadedFile $file
     )
     {
     }
 
-    public function save(): bool
+    public function save(): string|File
     {
-        $originalName = preg_replace('/-+/', '_', pathinfo($this->file->getClientOriginalPath(), PATHINFO_FILENAME));
-        $newFileName = $originalName . '-' . uniqid() . $this->file->guessExtension();
-        $pathToDir = '/storage/' . (new \DateTime())->format('Y-m-d');
+        $fileSystem = new Filesystem();
 
-        if (!is_dir($pathToDir)) {
-            mkdir($pathToDir, 775);
+        if (is_string($this->file)) {
+            $extension = preg_replace('/.+[.]/', '', $this->file);
+            $client = HttpClient::create();
+            $response = $client->request('GET', $this->file);
+
+            if ($response->getStatusCode() === 200) {
+                $content = $response->getContent();
+                $tempFile = tempnam(sys_get_temp_dir(), 'tmp_' . uniqid());
+                file_put_contents($tempFile, $content);
+
+                $this->file = new UploadedFile(
+                    $tempFile,
+                    "temp.{$extension}",
+                    "image/{$extension}",
+                    null,
+                    true
+                );
+
+            } else {
+                return 'File not loaded';
+            }
         }
+
+        $newFileName = md5(uniqid() . $this->file->getClientOriginalName()) . '.' . $this->file->getClientOriginalExtension();
+        $pathToDir = $this->directory();
 
         try {
-            $this->file->move($pathToDir, $newFileName);
+            if (!is_dir($pathToDir)) {
+                $fileSystem->mkdir($pathToDir);
+                $fileSystem->chown($pathToDir, 'root', true);
+                $fileSystem->chmod($pathToDir, 775, 0000, true);
+            }
 
-            $image = new Image();
-
-            return true;
+            return $this->file->move($pathToDir, $newFileName);
         } catch (\Exception $exception) {
-            return false;
+            return $exception->getMessage();
         }
+    }
 
+
+    private function directory(): string
+    {
+        return '/var/www/html/public/upload/';
     }
 
 }

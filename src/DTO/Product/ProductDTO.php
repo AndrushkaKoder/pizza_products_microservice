@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\DTO\Product;
 
 use App\DTO\Category\CategoryDTO;
+use App\DTO\Image\ImageDTO;
 use App\Entity\Category;
+use App\Entity\Image;
 use App\Entity\Product;
 
 readonly class ProductDTO
@@ -23,7 +25,10 @@ readonly class ProductDTO
             'price' => $this->product->getPrice(),
             'categories' => array_map(function (Category $category) {
                 return (new CategoryDTO($category))->toArray();
-            }, $this->product->getCategories()->toArray())
+            }, $this->product->getCategories()->toArray()),
+            'images' => array_map(function (Image $image) {
+                return (new ImageDTO($image))->getSource();
+            }, $this->product->getImages()->toArray())
         ];
     }
 

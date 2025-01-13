@@ -137,14 +137,24 @@ class ProductController extends AbstractController
         if (!$file) {
             return new JsonResponse([
                 'success' => false,
-                'message' => 'No image'
+                'message' => 'Empty data'
             ], 400);
         }
 
         $fileSaver = new FileSaver($file);
 
+        $savedFile = $fileSaver->save();
+
+        if (is_string($savedFile)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => $savedFile
+            ], 400);
+        }
+
         return new JsonResponse([
-            'success' => $fileSaver->save()
+            'success' => true,
+            'message' => 'http://' . $request->getHttpHost() . '/upload/' . $savedFile->getFilename()
         ]);
     }
 

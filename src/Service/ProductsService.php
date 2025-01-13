@@ -8,9 +8,11 @@ use App\DTO\Product\CreateProductDTO;
 use App\DTO\Product\OneProductDTO;
 use App\DTO\Product\ProductDTO;
 use App\DTO\Product\UpdateProductDTO;
+use App\Entity\Image;
 use App\Entity\Product;
 use App\Exception\NotFoundException;
 use App\Repository\ProductRepository;
+use App\Service\File\FileSaver;
 use Doctrine\ORM\EntityManagerInterface;
 
 readonly class ProductsService
@@ -69,6 +71,10 @@ readonly class ProductsService
         $this->manager->persist($product);
         $this->manager->flush();
 
+        /**
+         * TODO обновление фото
+         */
+
         return (new ProductDTO($product))->toArray();
     }
 
@@ -96,6 +102,18 @@ readonly class ProductsService
             ->setDescription($dto->getDescription())
             ->setPrice($dto->getPrice())
             ->setActive($dto->getActive());
+
+        if ($uploadImage = $dto->getImage()) {
+            $file = (new FileSaver($uploadImage))->save();
+            if (is_object($file)) {
+                $image = new Image();
+                $image->setName($file->getFilename());
+                $image->setSource('/upload/' . $file->getFilename());
+                $image->setProduct($product);
+                $product->addImage($image);
+                $this->manager->persist($image);
+            }
+        }
 
         $this->manager->persist($product);
         $this->manager->flush();
