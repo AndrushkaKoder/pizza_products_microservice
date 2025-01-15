@@ -29,6 +29,7 @@ services:
   db:
     image: mysql:5.7
     container_name: symfony_db
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: products
@@ -48,8 +49,8 @@ services:
       - "8081:80"
     environment:
       PMA_HOST: db
-      PMA_USER: symfony_user
-      PMA_PASSWORD: symfony_password
+      PMA_USER: user
+      PMA_PASSWORD: password
     networks:
       - symfony_network
 
@@ -59,6 +60,17 @@ services:
       dockerfile: composer.Dockerfile
     volumes:
       - ./:/var/www/html
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - symfony_network
+    volumes:
+      - ./data:/data
 
 volumes:
   db_data:
