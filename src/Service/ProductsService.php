@@ -14,12 +14,18 @@ use App\Exception\NotFoundException;
 use App\Repository\ProductRepository;
 use App\Service\File\FileSaver;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 readonly class ProductsService
 {
+
+    public const PRODUCTS_CACHE_KEY = 'products';
+    public const PRODUCTS_CACHE_TIME = 3600 * 24;
+
     public function __construct(
         private ProductRepository      $repository,
-        private EntityManagerInterface $manager
+        private EntityManagerInterface $manager,
+        private CacheItemPoolInterface $cache
     )
     {
     }
@@ -38,7 +44,17 @@ readonly class ProductsService
 
     public function getAllProducts(): array
     {
-        return array_map(fn(Product $product) => (new ProductDTO($product))->toArray(), $this->repository->getActive());
+        $cacheItem = $this->cache->getItem(self::PRODUCTS_CACHE_KEY);
+
+        if (!$cacheItem->isHit()) {
+            $products = $this->repository->getActive();
+            $productsDTOs = array_map(fn(Product $product) => (new ProductDTO($product))->toArray(), $products);
+            $cacheItem->set($productsDTOs);
+            $cacheItem->expiresAfter(self::PRODUCTS_CACHE_TIME);
+            $this->cache->save($cacheItem);
+        }
+
+        return $cacheItem->get();
     }
 
 
@@ -91,6 +107,9 @@ readonly class ProductsService
 
         $this->manager->remove($product);
         $this->manager->flush();
+
+        $this->cache->deleteItem(self::PRODUCTS_CACHE_KEY);
+
         return true;
     }
 
@@ -117,6 +136,8 @@ readonly class ProductsService
 
         $this->manager->persist($product);
         $this->manager->flush();
+
+        $this->cache->deleteItem(self::PRODUCTS_CACHE_KEY);
 
         return (new ProductDTO($product))->toArray();
     }

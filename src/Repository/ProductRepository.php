@@ -21,6 +21,8 @@ class ProductRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->where('p.active = :active')
             ->setParameter('active', true)
+            ->leftJoin('p.categories', 'c')
+            ->leftJoin('p.images', 'i')
             ->orderBy('p.id', 'DESC')
             ->getQuery()
             ->getResult();
