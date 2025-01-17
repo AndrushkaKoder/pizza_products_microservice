@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     networks:
-      - symfony_network
+      - pizza_network
 
   web:
     image: nginx:alpine
@@ -24,7 +24,7 @@ services:
     depends_on:
       - php
     networks:
-      - symfony_network
+      - pizza_network
 
   db:
     image: mysql:5.7
@@ -38,7 +38,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - symfony_network
+      - pizza_network
     ports:
       - "3316:3306"
 
@@ -52,7 +52,7 @@ services:
       PMA_USER: user
       PMA_PASSWORD: password
     networks:
-      - symfony_network
+      - pizza_network
 
   composer:
     build:
@@ -68,7 +68,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - symfony_network
+      - pizza_network
     volumes:
       - ./data:/data
 
@@ -76,5 +76,6 @@ volumes:
   db_data:
 
 networks:
-  symfony_network:
+  pizza_network:
+    external: true
     driver: bridge
